@@ -1,46 +1,62 @@
-// Heart + star background
-const background = document.getElementById("background");
-const shapes = ["💖", "⭐"];
-for (let i = 0; i < 40; i++) {
-  const el = document.createElement("div");
-  el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-  el.className = Math.random() > 0.5 ? "heart" : "star";
-  el.style.left = Math.random() * 100 + "vw";
-  el.style.animationDuration = 6 + Math.random() * 6 + "s";
-  el.style.fontSize = 15 + Math.random() * 25 + "px";
-  background.appendChild(el);
+// Play music when user interacts (click/touch) – works reliably on all browsers
+document.body.addEventListener('click', startMusic, { once: true });
+document.body.addEventListener('touchstart', startMusic, { once: true });
+
+function startMusic() {
+    const audio = document.getElementById('birthdayMusic');
+    audio.volume = 0.4; // Soft background volume (adjust 0.1–1.0 if needed)
+    audio.play().catch(() => {
+        // Fallback if autoplay blocked
+        console.log("Music autoplay prevented – will play on next interaction");
+    });
 }
 
-// Music + animation logic
-const startBtn = document.getElementById("startButton");
-const book = document.querySelector(".book");
-const pages = document.querySelectorAll(".page");
-const song = document.getElementById("birthdaySong");
-const flip = document.getElementById("flipSound");
-const finalScreen = document.querySelector(".final-screen");
+// Create confetti
+function createConfetti() {
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDuration = (Math.random() * 4 + 4) + 's';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 60%)`;
+    confetti.style.width = (Math.random() * 10 + 8) + 'px';
+    confetti.style.height = (Math.random() * 20 + 20) + 'px';
+    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(confetti);
 
-startBtn.addEventListener("click", async () => {
-  startBtn.classList.add("hidden");
-  book.classList.remove("hidden");
+    setTimeout(() => confetti.remove(), 8000);
+}
 
-  try {
-    await song.play();
-  } catch (e) {
-    alert("Tap the button again to enable music 🎵");
-  }
+// Create floating heart
+function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerHTML = '❤️';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+    heart.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+    document.body.appendChild(heart);
 
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i < pages.length) {
-      flip.play();
-      pages[i].classList.add("flip");
-      i++;
-    } else {
-      clearInterval(interval);
-      setTimeout(() => {
-        book.classList.add("hidden");
-        finalScreen.classList.remove("hidden");
-      }, 1500);
-    }
-  }, 2500);
-});
+    setTimeout(() => heart.remove(), 10000);
+}
+
+// Create sparkle
+function createSparkle() {
+    const sparkle = document.createElement('div');
+    sparkle.classList.add('sparkle');
+    sparkle.style.left = Math.random() * 100 + 'vw';
+    sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    document.body.appendChild(sparkle);
+
+    setTimeout(() => sparkle.remove(), 6000);
+}
+
+// Continuous creation
+setInterval(createConfetti, 100);
+setInterval(createHeart, 400);
+setInterval(createSparkle, 300);
+
+// Initial burst for instant magic
+for (let i = 0; i < 100; i++) {
+    setTimeout(createConfetti, i * 20);
+    if (i < 30) setTimeout(createHeart, i * 100);
+}
